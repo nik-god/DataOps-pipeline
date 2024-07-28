@@ -1,36 +1,31 @@
-# scripts/preprocess_data.py
-
 import os
 import pandas as pd
 from kaggle.api.kaggle_api_extended import KaggleApi
 
-def download_kaggle_data():
-    dataset = 'nikbond/onlinesales'
-    destination = './data'
-    if not os.path.exists(destination):
-        os.makedirs(destination)
+# Step 1: Download the Dataset from Kaggle
+dataset = 'nikbond/onlinesales'
+destination = './data'
 
-    api = KaggleApi()
-    api.authenticate()
-    api.dataset_download_file(dataset, 'OnlineSales.csv', path=destination)
-    print("Dataset downloaded successfully.")
+# Create the data directory if it doesn't exist
+if not os.path.exists(destination):
+    os.makedirs(destination)
 
-def preprocess_data():
-    file_path = './data/OnlineSales.csv'
-    df = pd.read_csv(file_path)
+api = KaggleApi()
+api.authenticate()
+api.dataset_download_files(dataset, path=destination, unzip=True)
 
-    # Clean up the data
-    initial_row_count = len(df)
-    df = df[df['Country'].notna()]
-    df = df[df['Country'].str.lower() != 'unspecified']
-    final_row_count = len(df)
+# Load the dataset
+file_path = os.path.join(destination, 'OnlineSales.csv')
+data = pd.read_csv(file_path)
 
-    print(f"Initial number of rows: {initial_row_count}")
-    print(f"Number of rows after cleanup: {final_row_count}")
+# Step 2: Data Cleaning
+# Drop rows where the country is not specified or is 'Unspecified'
+data = data[data['Country'].notna()]
+data = data[data['Country'] != 'Unspecified']
 
-    df.to_csv(file_path, index=False)
-    print("Data preprocessed and saved successfully.")
+# Step 3: Save the cleaned data
+cleaned_file_path = os.path.join(destination, 'CleanedOnlineSales.csv')
+data.to_csv(cleaned_file_path, index=False)
 
-if __name__ == "__main__":
-    download_kaggle_data()
-    preprocess_data()
+print(f"Original rows: {len(data)}")
+print(f"Cleaned rows: {len(data)}")

@@ -21,8 +21,12 @@ jobs:
       - name: Install dependencies
         run: pip install kaggle pandas
 
+      - name: Create data directory
+        run: mkdir -p data
+
       - name: Fetch & Process Data
-        run: python scripts/preprocess_data.py
+        run: |
+          python scripts/preprocess_data.py
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
