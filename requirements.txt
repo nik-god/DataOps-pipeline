@@ -2,3 +2,4 @@ pandas
 kaggle
 dash
 plotly
+flask
