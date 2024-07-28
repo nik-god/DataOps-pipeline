@@ -1,0 +1,9 @@
+Example Kubernetes Deployment with Secrets
+To handle kaggle.json more securely in Kubernetes, use Kubernetes Secrets:
+
+Create a Kubernetes Secret:
+
+sh
+Copy code
+kubectl create secret generic kaggle-secret --from-file=kaggle.json
+

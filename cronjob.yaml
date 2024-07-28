@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dataops-preprocess
+spec:
+  schedule: "0 * * * *"  # This schedule runs the job every hour. Adjust as needed.
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: preprocess
+            image: <your-dockerhub-username>/online-sales-dashboard:latest
+            command: ["python", "preprocess_data.py"]
+            env:
+            - name: KAGGLE_CONFIG_DIR
+              value: /root/.kaggle
+            volumeMounts:
+            - name: kaggle-secret
+              mountPath: /root/.kaggle
+              readOnly: true
+          restartPolicy: OnFailure
+          volumes:
+          - name: kaggle-secret
+            secret:
+              secretName: kaggle-secret

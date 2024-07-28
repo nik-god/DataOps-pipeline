@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataops-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dataops-pipeline
+  template:
+    metadata:
+      labels:
+        app: dataops-pipeline
+    spec:
+      containers:
+      - name: dataops-container
+        image: nikitamathur/online-sales-dashboard:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: kaggle-volume
+          mountPath: /root/.kaggle
+          readOnly: true
+      volumes:
+      - name: kaggle-volume
+        secret:
+          secretName: kaggle-secret
