@@ -70,4 +70,11 @@ jobs:
     needs: deploy_dashboard
     steps:
       - name: Checkout code
-       
+        uses: actions/checkout@v3
+
+      - name: Set up Minikube and Kubernetes tools
+        run: |
+          minikube start --driver=docker --container-runtime=docker --kubernetes-version=v1.24.0
+
+      - name: Set up CronJob for Data Updates
+        run: kubectl apply -f cronjob.yaml
