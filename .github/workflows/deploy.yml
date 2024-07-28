@@ -54,20 +54,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Minikube
-        uses: manusa/actions-setup-minikube@v2.4.0
-        with:
-          minikube version: 'latest'
-          kubernetes version: 'v1.24.0'
-          driver: 'docker'
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-      - name: Start Minikube
-        run: minikube start --driver=docker --container-runtime=docker --kubernetes-version=v1.24.0
+      - name: Install kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Create kind cluster
+        run: kind create cluster --wait 5m
 
       - name: Set up Kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          minikube kubeconfig > $HOME/.kube/config
+        run: kind get kubeconfig > $HOME/.kube/config
 
       - name: Create Kubernetes resources
         run: |
@@ -84,15 +87,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Minikube
-        uses: manusa/actions-setup-minikube@v2.4.0
-        with:
-          minikube version: 'latest'
-          kubernetes version: 'v1.24.0'
-          driver: 'docker'
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-      - name: Start Minikube
-        run: minikube start --driver=docker --container-runtime=docker --kubernetes-version=v1.24.0
+      - name: Install kind
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
+
+      - name: Create kind cluster
+        run: kind create cluster --wait 5m
 
       - name: Set up CronJob for Data Updates
         run: kubectl apply -f cronjob.yaml
