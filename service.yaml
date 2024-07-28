@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: dataops-service
 spec:
-  selector:
-    app: dataops-pipeline
-  ports:
-    - protocol: "TCP"
-      port: 8080
-      targetPort: 8080
   type: LoadBalancer
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: dataops
