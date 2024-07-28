@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  KUBECONFIG: /home/runner/.kube/config
+  KUBECONFIG: /Users/nik/.kube/config
 
 jobs:
   fetch_and_process_data:
