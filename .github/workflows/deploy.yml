@@ -56,6 +56,11 @@ jobs:
         minikube start --driver=docker --container-runtime=docker --kubernetes-version=v1.24.0
         minikube addons enable ingress
 
+    - name: Wait for CronJob to be Ready
+      run: |
+        kubectl wait --for=condition=complete job --timeout=120s
+        kubectl get cronjob dataops-preprocess
+
     - name: Create Job from CronJob to Check for Updates
       run: kubectl create job --from=cronjob/dataops-preprocess manual-preprocess-job
 
