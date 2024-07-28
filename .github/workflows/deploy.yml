@@ -35,8 +35,7 @@ jobs:
         git clone https://github.com/Mirantis/cri-dockerd.git
         cd cri-dockerd
         mkdir bin
-        go mod init github.com/Mirantis/cri-dockerd
-        go mod tidy
+        go get
         go build -o bin/cri-dockerd
         sudo cp bin/cri-dockerd /usr/local/bin/
         sudo cp packaging/systemd/* /etc/systemd/system/
@@ -131,8 +130,7 @@ jobs:
         git clone https://github.com/Mirantis/cri-dockerd.git
         cd cri-dockerd
         mkdir bin
-        go mod init github.com/Mirantis/cri-dockerd
-        go mod tidy
+        go get
         go build -o bin/cri-dockerd
         sudo cp bin/cri-dockerd /usr/local/bin/
         sudo cp packaging/systemd/* /etc/systemd/system/
