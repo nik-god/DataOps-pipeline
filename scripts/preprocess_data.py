@@ -1,26 +1,36 @@
+# scripts/preprocess_data.py
+
 import os
 import pandas as pd
 from kaggle.api.kaggle_api_extended import KaggleApi
 
-# Step 1: Download the Dataset from Kaggle
-dataset = 'nikbond/onlinesales'
-destination = './data/OnlineSales.csv'
-os.makedirs('./data', exist_ok=True)
+def download_kaggle_data():
+    dataset = 'nikbond/onlinesales'
+    destination = './data'
+    if not os.path.exists(destination):
+        os.makedirs(destination)
 
-api = KaggleApi()
-api.authenticate()
-api.dataset_download_file(dataset, file_name='OnlineSales.csv', path='./data')
+    api = KaggleApi()
+    api.authenticate()
+    api.dataset_download_file(dataset, 'OnlineSales.csv', path=destination)
+    print("Dataset downloaded successfully.")
 
-# Step 2: Load the Data
-df = pd.read_csv(destination)
+def preprocess_data():
+    file_path = './data/OnlineSales.csv'
+    df = pd.read_csv(file_path)
 
-# Step 3: Data Cleanup
-df.dropna(subset=['Country'], inplace=True)
-df = df[df['Country'].str.lower() != 'unspecified']
+    # Clean up the data
+    initial_row_count = len(df)
+    df = df[df['Country'].notna()]
+    df = df[df['Country'].str.lower() != 'unspecified']
+    final_row_count = len(df)
 
-# Save the cleaned data
-df.to_csv(destination, index=False)
+    print(f"Initial number of rows: {initial_row_count}")
+    print(f"Number of rows after cleanup: {final_row_count}")
 
-# Print number of rows before and after cleanup
-print(f"Number of rows before cleanup: {len(df) + df.isnull().sum().sum()}")
-print(f"Number of rows after cleanup: {len(df)}")
+    df.to_csv(file_path, index=False)
+    print("Data preprocessed and saved successfully.")
+
+if __name__ == "__main__":
+    download_kaggle_data()
+    preprocess_data()

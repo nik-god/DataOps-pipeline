@@ -4,14 +4,12 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: '0 * * * *'  # This schedule runs the job every hour
 
 env:
   KUBECONFIG: /home/runner/.kube/config
 
 jobs:
-  preprocess_data:
+  fetch_and_process_data:
     runs-on: self-hosted
     steps:
       - name: Checkout code
@@ -23,17 +21,17 @@ jobs:
           python-version: '3.8'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install kaggle pandas
 
-      - name: Data Processing & Cleanup
+      - name: Fetch & Process Data
         run: python scripts/preprocess_data.py
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
 
-  build_image:
+  build:
     runs-on: self-hosted
-    needs: preprocess_data
+    needs: fetch_and_process_data
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -47,9 +45,9 @@ jobs:
       - name: Push Docker Image
         run: docker push nikitamathur/online-sales-dashboard:latest
 
-  deploy:
+  deploy_dashboard:
     runs-on: self-hosted
-    needs: build_image
+    needs: build
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -63,7 +61,13 @@ jobs:
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
-          kubectl apply -f cronjob.yaml
 
       - name: Verify Deployment
         run: kubectl get pods
+
+  check_for_updates:
+    runs-on: self-hosted
+    needs: deploy_dashboard
+    steps:
+      - name: Checkout code
+       
