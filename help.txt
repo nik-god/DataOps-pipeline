@@ -7,3 +7,9 @@ sh
 Copy code
 kubectl create secret generic kaggle-secret --from-file=kaggle.json
 
+
+
+# to run gitaction runner:
+
+./run.shs
+
